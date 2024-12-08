@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Flight Details</h2>
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>Flight Number</th>
+            <td>{{ flight.flight_number }}</td>
+        </tr>
+        <tr>
+            <th>Plane Model</th>
+            <td>{{ flight.plane.model }}</td>
+        </tr>
+        <tr>
+            <th>Plane Serial Number</th>
+            <td>{{ flight.plane.serial_number }}</td>
+        </tr>
+        <tr>
+            <th>Source</th>
+            <td>{{ flight.source }}</td>
+        </tr>
+        <tr>
+            <th>Destination</th>
+            <td>{{ flight.destination }}</td>
+        </tr>
+        <tr>
+            <th>Takeoff Time</th>
+            <td>{{ flight.takeoff_time }}</td>
+        </tr>
+        <tr>
+            <th>Landing Time</th>
+            <td>{{ flight.landing_time }}</td>
+        </tr>
+        <tr>
+            <th>Pilot Name</th>
+            <td>{{ flight.pilot_name }}</td>
+        </tr>
+        <tr>
+            <th>Crew Count</th>
+            <td>{{ flight.crew_count }}</td>
+        </tr>
+        <tr>
+            <th>Ticket Price</th>
+            <td>${{ flight.ticket_price }}</td>
+        </tr>
+        <tr>
+            <th>Available Seats</th>
+            <td>{{ flight.available_seats }}</td>
+        </tr>
+        <tr>
+            <th>Flight Status</th>
+            <td>{{ flight.get_status_display }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Button to book the flight -->
+{% if flight.available_seats > 0 and flight.status != 'canceled' %}
+    <a href="{% url 'book-flight' flight.pk %}" class="btn btn-primary">Book This Flight</a>
+{% else %}
+    <p class="alert alert-warning">This flight is either full or no longer available.</p>
+{% endif %}
+
+<a href="{% url 'flight-list' flight.source flight.destination %}" class="btn btn-secondary mt-3">Back to Flight List</a>
+
+{% endblock %}

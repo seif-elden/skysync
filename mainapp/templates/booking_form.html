@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Booking Form</h2>
+        </div>
+
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-6">
+                    <label for="passenger_name" class="form-label">Passenger Name</label>
+                    {{ form.passenger_name|add_class:"form-control" }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="passenger_passport" class="form-label">Passport Number</label>
+                    {{ form.passenger_passport|add_class:"form-control" }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="passenger_email" class="form-label">Email</label>
+                    {{ form.passenger_email|add_class:"form-control" }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="passenger_phone" class="form-label">Phone Number</label>
+                    {{ form.passenger_phone|add_class:"form-control" }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="number_of_seats" class="form-label">Seats to Book</label>
+                    {{ form.number_of_seats|add_class:"form-control" }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="luggage_count" class="form-label">Luggage Count</label>
+                    {{ form.luggage_count|add_class:"form-control" }}
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success w-100">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Back to Home</a>
+</div>
+{% endblock %}

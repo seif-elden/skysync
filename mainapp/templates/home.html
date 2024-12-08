@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Search Flights Section -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Search Flights</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label for="source" class="form-label">From</label>
+                    {{ form.source|add_class:"form-control" }}
+                </div>
+                <div class="col-md-6">
+                    <label for="destination" class="form-label">To</label>
+                    {{ form.destination|add_class:"form-control" }}
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success w-100">Search Flights</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Check Booking Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h2 class="mb-0">Check Booking</h2>
+        </div>
+        <div class="card-body">
+            <form id="checkBookingForm" class="row g-3" onsubmit="redirectToEditBooking(event)">
+                <div class="col-md-12">
+                    <label for="booking_id" class="form-label">Enter Booking ID:</label>
+                    <input type="text" id="booking_id" class="form-control" placeholder="Booking ID" required>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-info w-100">view Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function redirectToEditBooking(event) {
+        event.preventDefault();  // Prevent default form submission
+        const bookingId = document.getElementById('booking_id').value;
+    
+        if (bookingId) {
+            // Redirect to the edit booking URL
+            window.location.href = `/booking-detail/${bookingId}/`;
+        } else {
+            alert("Please enter a valid Booking ID.");
+        }
+    }
+</script>
+{% endblock %}
+
+

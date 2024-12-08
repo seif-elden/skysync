@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Upcoming Flights from <strong>{{ source }}</strong> to <strong>{{ destination }}</strong></h2>
+
+    {% if flights %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for flight in flights %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title">Flight: {{ flight.flight_number }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Takeoff Time:</strong> {{ flight.takeoff_time|date:"D, M j Y, H:i" }}</p>
+                    <p><strong>Landing Time:</strong> {{ flight.landing_time|date:"D, M j Y, H:i" }}</p>
+                    <p><strong>Available Seats:</strong> {{ flight.available_seats }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge 
+                            {% if flight.status == 'scheduled' %} bg-success 
+                            {% elif flight.status == 'delayed' %} bg-warning 
+                            {% else %} bg-secondary 
+                            {% endif %}
+                        ">
+                            {{ flight.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'flight-detail' flight.pk %}" class="btn btn-outline-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        No flights available for this route.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
