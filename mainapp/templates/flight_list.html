@@ -16,6 +16,7 @@
                     <p><strong>Takeoff Time:</strong> {{ flight.takeoff_time|date:"D, M j Y, H:i" }}</p>
                     <p><strong>Landing Time:</strong> {{ flight.landing_time|date:"D, M j Y, H:i" }}</p>
                     <p><strong>Available Seats:</strong> {{ flight.available_seats }}</p>
+                    <p><strong>price:</strong> {{ flight.ticket_price }}</p>
                     <p><strong>Status:</strong> 
                         <span class="badge 
                             {% if flight.status == 'scheduled' %} bg-success 
