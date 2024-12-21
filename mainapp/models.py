@@ -85,6 +85,51 @@ class Flight(models.Model):
         """Check if the flight has already landed."""
         return self.landing_time < timezone.now()
 
+class passenger(models.Model):
+
+    name = models.CharField(max_length=100, help_text="Passenger's full name")
+    passport = models.CharField(max_length=50, help_text="Passenger's passport number")
+    email = models.EmailField(help_text="Passenger's email address")
+    phone = models.CharField(max_length=15, help_text="Passenger's contact phone number")
+
+    class Meta:
+        verbose_name = ("passanger")
+        verbose_name_plural = ("passangers")
+
+    def __str__(self):
+        return self.name
+
+
+
+class Payment(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('canceled', 'Canceled'),
+    ]
+
+    payment_date = models.DateTimeField(auto_now_add=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=15, choices=PAYMENT_STATUS_CHOICES, default='pending'
+    )
+    payment_method = models.CharField(max_length=50)
+    transaction_id = models.CharField(max_length=100, unique=True)
+    payer_name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = ("payment")
+        verbose_name_plural = ("payments")
+
+    def __str__(self):
+        return f"{self.payer_name} - ${self.amount} ({self.status})"
+
+    def is_successful(self):
+        """Check if the payment was completed successfully."""
+        return self.status == 'completed'
+
 
 class Booking(models.Model):
     BOOKING_STATUS_CHOICES = [
@@ -94,11 +139,21 @@ class Booking(models.Model):
     ]
 
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name='bookings')
-    passenger_name = models.CharField(max_length=100, help_text="Passenger's full name")
-    passenger_passport = models.CharField(max_length=50, help_text="Passenger's passport number")
-    passenger_email = models.EmailField(help_text="Passenger's email address")
-    passenger_phone = models.CharField(max_length=15, help_text="Passenger's contact phone number")
-    number_of_seats = models.PositiveIntegerField(help_text="Assigned seat number",null=True)
+    passenger = models.ForeignKey(
+        passenger,  # Correct model name
+        on_delete=models.CASCADE,
+        related_name='bookings_passenger',
+        null=True,
+        blank=True
+    )
+    payment = models.ForeignKey(
+        Payment,  # Updated field name to lowercase
+        on_delete=models.CASCADE,
+        related_name='bookings_payment',
+        null=True,
+        blank=True
+    )
+    number_of_seats = models.PositiveIntegerField(help_text="Assigned seat number", null=True)
     booking_status = models.CharField(
         max_length=10,
         choices=BOOKING_STATUS_CHOICES,
@@ -111,11 +166,14 @@ class Booking(models.Model):
     total_price = models.DecimalField(max_digits=8, decimal_places=2, help_text="Total price of the booking in USD")
     
     def __str__(self):
-        return f"Booking for {self.passenger_name} on flight {self.flight.flight_number}"
+        if self.passenger:
+            return f"Booking for {self.passenger.name} on flight {self.flight.flight_number}"
+        return f"Booking on flight {self.flight.flight_number}"
 
     def save(self, *args, **kwargs):
         # Automatically assign the price to match the flight's ticket price
-        self.total_price = self.flight.ticket_price * self.number_of_seats 
+        if self.number_of_seats:
+            self.total_price = self.flight.ticket_price * self.number_of_seats
 
         # If the booking is confirmed and the status has changed to 'confirmed'
         if self.booking_status == 'confirmed':
@@ -131,3 +189,32 @@ class Booking(models.Model):
     def is_confirmed(self):
         """Check if the booking is confirmed."""
         return self.booking_status == 'confirmed'
+
+
+    
+
+
+
+
+class Notification(models.Model):
+    NOTIFICATION_TYPE_CHOICES = [
+        ('email', 'Email'),
+        ('sms', 'SMS'),
+        ('push', 'Push Notification'),
+    ]
+
+    title = models.CharField(max_length=100)
+    message = models.TextField()
+    recipient = models.ForeignKey(passenger, on_delete=models.CASCADE, related_name='notifcation_passenger', null=True,blank=True)
+    notification_type = models.CharField(
+        max_length=20, choices=NOTIFICATION_TYPE_CHOICES, default='email'
+    )
+    sent_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = ("notification")
+        verbose_name_plural = ("notifications")
+
+    def __str__(self):
+        return f"{self.title} - {self.notification_type} to {self.recipient}"
+

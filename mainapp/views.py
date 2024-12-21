@@ -2,7 +2,7 @@ from django.views.generic import FormView, DetailView, ListView, CreateView , Up
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from .models import Flight, Booking
-from .forms import SearchFlightForm, BookingForm
+from .forms import SearchFlightForm , CombinedBookingForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 
@@ -34,7 +34,7 @@ class FlightDetailView(DetailView):
     
 class BookingCreateView(CreateView):
     model = Booking
-    form_class = BookingForm
+    form_class = CombinedBookingForm
     template_name = 'booking_form.html'
 
     def form_valid(self, form):
@@ -54,7 +54,7 @@ class BookingDetailView(DetailView):
 
 class EditBookingView(UpdateView):
     model = Booking
-    form_class = BookingForm
+    form_class = CombinedBookingForm
     template_name = 'edit_booking.html'
     context_object_name = 'booking'
 
